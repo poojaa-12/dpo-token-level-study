@@ -1,0 +1,6 @@
+{"id":"con_001a","prompt":"What is the capital of France?","group":"con_001"}
+{"id":"con_001b","prompt":"Name the capital city of France.","group":"con_001"}
+{"id":"con_001c","prompt":"France's capital is which city?","group":"con_001"}
+{"id":"con_002a","prompt":"What is 2 + 2?","group":"con_002"}
+{"id":"con_002b","prompt":"Compute the sum of 2 and 2.","group":"con_002"}
+{"id":"con_002c","prompt":"Add two and two.","group":"con_002"}

@@ -1,0 +1,11 @@
+model_name: "Qwen/Qwen3-1.7B"
+use_token_weighted: true
+beta: 0.1
+lr: 1.0e-5
+epochs: 3
+batch_size: 1
+grad_accum_steps: 8
+max_grad_norm: 1.0
+save_path: "checkpoints/token_weighted_dpo"
+weight_temperature: 0.5
+dataset_path: "data/processed/train.jsonl"
