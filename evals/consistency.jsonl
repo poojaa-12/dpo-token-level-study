@@ -4,3 +4,9 @@
 {"id":"con_002a","prompt":"What is 2 + 2?","group":"con_002"}
 {"id":"con_002b","prompt":"Compute the sum of 2 and 2.","group":"con_002"}
 {"id":"con_002c","prompt":"Add two and two.","group":"con_002"}
+{"id":"con_003a","prompt":"Which planet is the largest in our solar system?","group":"con_003"}
+{"id":"con_003b","prompt":"Name the biggest planet in the solar system.","group":"con_003"}
+{"id":"con_003c","prompt":"What is our solar system's largest planet?","group":"con_003"}
+{"id":"con_004a","prompt":"At sea level, when does water boil?","group":"con_004"}
+{"id":"con_004b","prompt":"What temperature is the boiling point of water at sea level?","group":"con_004"}
+{"id":"con_004c","prompt":"Water reaches boiling at what temperature at sea level?","group":"con_004"}

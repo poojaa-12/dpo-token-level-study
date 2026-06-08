@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import os
+import random
 
+import numpy as np
 import torch
 import wandb
 from torch.optim import AdamW
@@ -19,8 +21,37 @@ def _resolve_dtype(device: str):
     return torch.float32
 
 
+def _set_seed(seed: int):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+def _validate_train_config(config: dict):
+    required = ["model_name", "batch_size", "lr", "save_path"]
+    missing = [key for key in required if key not in config]
+    if missing:
+        raise ValueError(f"Missing required config keys: {missing}")
+
+    dataset_path = config.get("dataset_path", "data/processed/train.jsonl")
+    if not os.path.exists(dataset_path):
+        raise FileNotFoundError(
+            f"Dataset not found at {dataset_path}. Run `python run_analysis.py --preprocess` first."
+        )
+    if os.path.getsize(dataset_path) == 0:
+        raise ValueError(f"Dataset file is empty: {dataset_path}")
+
+    if bool(config.get("use_token_weighted", False)) and int(config.get("batch_size", 1)) != 1:
+        raise ValueError("Token-weighted DPO requires batch_size=1 to avoid incorrect training.")
+
+
 def train(config: dict):
+    _validate_train_config(config)
     model_name = config["model_name"]
+    seed = int(config.get("seed", 42))
+    _set_seed(seed)
     device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     dtype = _resolve_dtype(device)
 
@@ -45,6 +76,7 @@ def train(config: dict):
         dataset,
         batch_size=config["batch_size"],
         shuffle=True,
+        generator=torch.Generator().manual_seed(seed),
         collate_fn=lambda batch: collate_fn(batch, tokenizer.pad_token_id),
     )
 
@@ -59,7 +91,9 @@ def train(config: dict):
 
     os.makedirs(save_path, exist_ok=True)
 
-    wandb.init(project="dpo-token-level-study", config=config)
+    use_wandb = bool(config.get("use_wandb", False))
+    if use_wandb:
+        wandb.init(project=config.get("wandb_project", "dpo-token-level-study"), config=config)
 
     step = 0
     for epoch in range(epochs):
@@ -92,13 +126,23 @@ def train(config: dict):
                 torch.nn.utils.clip_grad_norm_(policy.parameters(), max_grad_norm)
                 optimizer.step()
                 optimizer.zero_grad()
-                wandb.log({**metrics, "epoch": epoch, "step": step})
+                if use_wandb:
+                    wandb.log({**metrics, "epoch": epoch, "step": step})
                 step += 1
+
+        if len(loader) % grad_accum_steps != 0:
+            torch.nn.utils.clip_grad_norm_(policy.parameters(), max_grad_norm)
+            optimizer.step()
+            optimizer.zero_grad()
+            if use_wandb:
+                wandb.log({**last_metrics, "epoch": epoch, "step": step})
+            step += 1
 
         epoch_dir = os.path.join(save_path, f"epoch_{epoch}")
         policy.save_pretrained(epoch_dir)
         tokenizer.save_pretrained(epoch_dir)
         print(f"Epoch {epoch} complete. Loss: {last_metrics['loss']:.4f}")
 
-    wandb.finish()
+    if use_wandb:
+        wandb.finish()
     return policy

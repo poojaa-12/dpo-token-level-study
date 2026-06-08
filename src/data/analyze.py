@@ -8,6 +8,8 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
+from src.data.preprocess import format_instruction_prompt
+
 
 def compute_token_divergence(
     model,
@@ -26,7 +28,7 @@ def compute_token_divergence(
 
     skipped = 0
     for pair in tqdm(pairs[:max_samples], desc="Analyzing token divergence"):
-        prompt = pair["prompt"]
+        prompt = format_instruction_prompt(pair["prompt"])
         chosen = pair["chosen"]
         rejected = pair["rejected"]
 

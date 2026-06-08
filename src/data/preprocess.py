@@ -9,13 +9,17 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 
 
+def format_instruction_prompt(prompt: str) -> str:
+    return f"### Instruction:\n{prompt}\n\n### Response:\n"
+
+
 def format_for_dpo(pairs: list[dict[str, Any]], tokenizer, max_length: int = 512):
     """
     Convert preference pairs into tokenized DPO format.
     """
     formatted = []
     for pair in pairs:
-        prompt = f"### Instruction:\n{pair['prompt']}\n\n### Response:\n"
+        prompt = format_instruction_prompt(pair["prompt"])
         chosen_full = prompt + pair["chosen"]
         rejected_full = prompt + pair["rejected"]
 
@@ -31,7 +35,7 @@ def format_for_dpo(pairs: list[dict[str, Any]], tokenizer, max_length: int = 512
             truncation=True,
             return_tensors="pt",
         )
-        prompt_len = len(tokenizer(prompt).input_ids)
+        prompt_len = len(tokenizer(prompt, add_special_tokens=False).input_ids)
 
         formatted.append(
             {
@@ -85,10 +89,14 @@ def collate_fn(batch: list[dict[str, Any]], pad_token_id: int):
 
     chosen_padded = pad_sequence(chosen, batch_first=True, padding_value=pad_token_id)
     rejected_padded = pad_sequence(rejected, batch_first=True, padding_value=pad_token_id)
+    chosen_attention_mask = (chosen_padded != pad_token_id).long()
+    rejected_attention_mask = (rejected_padded != pad_token_id).long()
     prompt_length_tensor = torch.tensor(prompt_lengths, dtype=torch.long)
 
     return {
         "input_ids_chosen": chosen_padded,
         "input_ids_rejected": rejected_padded,
+        "attention_mask_chosen": chosen_attention_mask,
+        "attention_mask_rejected": rejected_attention_mask,
         "prompt_length": prompt_length_tensor,
     }

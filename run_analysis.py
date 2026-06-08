@@ -36,6 +36,14 @@ def main():
     args = parse_args()
     if not (args.download or args.analyze or args.preprocess):
         raise SystemExit("Specify at least one action: --download, --analyze, --preprocess")
+    if args.sample_size <= 0:
+        raise SystemExit("--sample-size must be > 0")
+    if args.max_analysis_samples <= 0:
+        raise SystemExit("--max-analysis-samples must be > 0")
+    if args.max_length <= 0:
+        raise SystemExit("--max-length must be > 0")
+    if args.threshold < 0:
+        raise SystemExit("--threshold must be >= 0")
 
     if args.download:
         download_ultrafeedback(sample_size=args.sample_size)

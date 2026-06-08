@@ -14,6 +14,27 @@ def write_results_json(results: dict[str, Any], output_dir: str, filename: str) 
     return path
 
 
+def write_jsonl(rows: list[dict[str, Any]], output_dir: str, filename: str) -> str:
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, filename)
+    with open(path, "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    return path
+
+
+def write_run_manifest(manifest: dict[str, Any], output_dir: str, filename: str = "run_manifest.json") -> str:
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, filename)
+    payload = {
+        **manifest,
+        "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+    return path
+
+
 def write_summary(results_by_model: dict[str, dict[str, float]], output_dir: str = "results") -> str:
     os.makedirs(output_dir, exist_ok=True)
     path = os.path.join(output_dir, "summary.md")

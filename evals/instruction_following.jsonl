@@ -1,3 +1,10 @@
-{"id":"if_001","prompt":"List exactly 5 reasons why sleep is important. Number each reason.","expected_format":"numbered_list","expected_count":5}
-{"id":"if_002","prompt":"Summarize how photosynthesis works in exactly 2 sentences.","expected_format":"two_sentences"}
-{"id":"if_003","prompt":"Respond only in JSON with keys: name, age, city.","expected_format":"json"}
+{"id":"if_001","prompt":"List exactly 5 reasons why sleep is important. Number each reason.","constraints":{"format":"numbered_list","count":5}}
+{"id":"if_002","prompt":"Explain photosynthesis in exactly one sentence.","constraints":{"format":"single_sentence"}}
+{"id":"if_003","prompt":"Respond only in JSON with keys: name, age, city.","constraints":{"format":"json","required_keys":["name","age","city"]}}
+{"id":"if_004","prompt":"Give exactly 3 numbered steps to boil pasta safely.","constraints":{"format":"numbered_list","count":3}}
+{"id":"if_005","prompt":"Describe electric cars in exactly one sentence.","constraints":{"format":"single_sentence"}}
+{"id":"if_006","prompt":"Return only JSON with keys: product, price, stock.","constraints":{"format":"json","required_keys":["product","price","stock"]}}
+{"id":"if_007","prompt":"Explain why the sky appears blue. Do not use the words 'light' or 'atmosphere'.","constraints":{"forbidden_words":["light","atmosphere"]}}
+{"id":"if_008","prompt":"List exactly 4 strategies to improve memory. Number each one 1-4.","constraints":{"format":"numbered_list","count":4}}
+{"id":"if_009","prompt":"In one sentence, define machine learning.","constraints":{"format":"single_sentence"}}
+{"id":"if_010","prompt":"Respond with a JSON object containing keys: title, author, year.","constraints":{"format":"json","required_keys":["title","author","year"]}}

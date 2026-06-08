@@ -1,0 +1,12 @@
+{
+  "name": "dpo_token_eval_suite",
+  "version": "v1.0.0",
+  "frozen": true,
+  "description": "Evaluation suite for instruction-following, adversarial refusal, and paraphrase consistency.",
+  "counts": {
+    "instruction_following": 10,
+    "adversarial": 8,
+    "consistency_prompts": 12,
+    "consistency_groups": 4
+  }
+}

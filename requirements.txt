@@ -13,3 +13,6 @@ wandb>=0.17.0
 jsonlines>=4.0.0
 scipy>=1.13.0
 pyyaml>=6.0.0
+mlx>=0.16.0
+mlx-lm>=0.16.0
+pytest>=8.0.0
